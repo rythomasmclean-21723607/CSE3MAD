@@ -25,14 +25,16 @@ With the following tools:
 
 The choice of application was chooseing from the individual Assessment Phase 1 project idealisations.
 
-Two project presented in Assignment Phase 1 was;
+The project presented in Assignment Phase 1 was;
 
-🎓 A La Trobe University campus mobile application.
+  - 🎓 A La Trobe University campus mobile application.
 
 The myLaTrobe University application has been selected as the project implmented.
 
 👨‍👩‍👧‍👦 Team Members
-Ry Thomas McLean (21723607)
+
+    Ry Thomas McLean (21723607)
 
 📄 License
-General Public License Version 3
+
+    General Public License Version 3
