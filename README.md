@@ -5,23 +5,23 @@ Design, build, and refine a purposeful Android Mobile Application.
 
 With the following features:
 
--✅ Searching and displaying POIs on a map
+  - ✅ Searching and displaying POIs on a map
 
--✅ Users to contribute new POIs
+  - ✅ Users to contribute new POIs
 
--✅ Firebase Firestore integration for data storage (mandatory)
+  - ✅ Firebase Firestore integration for data storage (mandatory)
 
--✅ Integration of at least 2 additional Firebase technologies
+  - ✅ Integration of at least 2 additional Firebase technologies
 
 With the following tools:
 
--✅ Projecy management tools such as GitHub and Jira
+  - ✅ Projecy management tools such as GitHub and Jira
 
--✅ A functional app for mobile platform and desktop applications
+  - ✅ A functional app for mobile platform and desktop applications
 
--✅ NodeJS, NPN
+  - ✅ NodeJS, NPN
 
--✅ React Native
+  - ✅ React Native
 
 The choice of application was chooseing from the individual Assessment Phase 1 project idealisations.
 
