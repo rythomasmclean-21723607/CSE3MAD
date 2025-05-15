@@ -1,125 +1,197 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+  useColorScheme,
+  Animated,
+  SafeAreaView,
+} from 'react-native';
+import Modal from 'react-native-modal';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-enum Screen {
-  Page1,
-  Page2,
-  Page3,
-  Me,
-}
+const { height } = Dimensions.get('window');
 
-const App = () => {
-  const [currentScreen, setCurrentScreen] = useState<Screen>(Screen.Page1);
+const categories = [
+  {
+    title: 'Student',
+    items: [
+      { id: '1', label: 'Email', image: 'https://via.placeholder.com/Email' },
+      { id: '2', label: 'Xoom', image: 'https://via.placeholder.com/Xoom' },
+    ],
+  },
+  {
+    title: 'University',
+    items: [{ id: '3', label: 'abpou', image: 'https://via.placeholder.com/50' }],
+  },
+  {
+    title: 'Other',
+    items: [{ id: '4', label: 'aasa', image: 'https://via.placeholder.com/50' }],
+  },
+];
 
-  const renderCanvas = () => {
-    switch (currentScreen) {
-      case Screen.Page1:
-        return (
-          <View style={styles.canvasCenter}>
-            <Text style={styles.text}>This is Guest Page 1</Text>
-          </View>
-        );
-      case Screen.Page2:
-        return (
-          <View style={styles.canvasCenter}>
-            <Text style={styles.text}>This is Guest Page 2</Text>
-          </View>
-        );
-      case Screen.Page3:
-        return (
-          <View style={styles.canvasCenter}>
-            <Text style={styles.text}>This is Guest Page 3</Text>
-          </View>
-        );
-      case Screen.Me:
-        return (
-          <Image
-            source={require('./assets/backgroud_me.png')}
-            style={styles.backgroundImage}
-            resizeMode="cover"
-          />
-        );
-      default:
-        return null;
+export default function App() {
+  const [visible, setVisible] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      fadeAnim.setValue(0);
     }
-  };
+  }, [visible]);
+
+  const styles = getStyles(isDark);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.canvas}>{renderCanvas()}</View>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>FAB-triggered Bottom Menu</Text>
 
-      <View style={styles.bottomBar}>
-        <TouchableOpacity
-          style={[styles.navButton, { backgroundColor: '#732626' }]}
-          onPress={() => setCurrentScreen(Screen.Page1)}
-        />
-        <TouchableOpacity
-          style={[styles.navButton, { backgroundColor: '#2f4f2f' }]}
-          onPress={() => setCurrentScreen(Screen.Page2)}
-        />
-        <TouchableOpacity
-          style={[styles.navButton, { backgroundColor: '#f4c542' }]}
-          onPress={() => setCurrentScreen(Screen.Page3)}
-        />
-        <TouchableOpacity style={styles.profileButton} onPress={() => setCurrentScreen(Screen.Me)}>
-          <Image source={require('./assets/profile-icon.png')} style={styles.icon} />
-          <Text style={styles.iconLabel}>Me</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+      {/* Floating Action Button + Tooltip */}
+      {showTooltip && <Text style={styles.tooltip}>Create New</Text>}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => setVisible(true)}
+        onLongPress={() => setShowTooltip(true)}
+        onPressOut={() => setShowTooltip(false)}
+        accessibilityLabel="Open menu"
+      >
+        <Icon name="plus" size={24} color="white" />
+      </TouchableOpacity>
+
+      {/* Bottom Modal Menu */}
+      <Modal
+        isVisible={visible}
+        onBackdropPress={() => setVisible(false)}
+        style={styles.modal}
+      >
+        <View style={styles.sheet}>
+          <ScrollView>
+            {categories.map((category) => (
+              <View key={category.title} style={styles.category}>
+                <Text style={styles.categoryTitle}>{category.title}</Text>
+                {category.items.length === 0 ? (
+                  <Text style={styles.emptyText}>No items</Text>
+                ) : (
+                  category.items.map((item, index) => (
+                    <Animated.View
+                      key={item.id}
+                      style={{ opacity: fadeAnim }}
+                    >
+                      <TouchableOpacity
+                        style={styles.itemRow}
+                        onPress={() => {
+                          console.log(`${item.label} selected`);
+                          setVisible(false);
+                        }}
+                      >
+                        <Image
+                          source={{ uri: item.image }}
+                          style={styles.image}
+                        />
+                        <Text style={styles.itemText}>{item.label}</Text>
+                      </TouchableOpacity>
+                    </Animated.View>
+                  ))
+                )}
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
-};
+}
 
-export default App;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  canvas: {
-    flex: 1,
-    backgroundColor: '#7CFC00', // Lime green
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  canvasCenter: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 12,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-  },
-  navButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 4,
-  },
-  profileButton: {
-    alignItems: 'center',
-  },
-  icon: {
-    width: 30,
-    height: 30,
-  },
-  iconLabel: {
-    fontSize: 12,
-    color: '#732626',
-    marginTop: 2,
-  },
-  text: {
-    fontSize: 20,
-    fontWeight: '600',
-  },
-  backgroundImage: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-  },
-});
-
+function getStyles(isDark) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      backgroundColor: isDark ? '#000' : '#fff',
+    },
+    header: {
+      textAlign: 'center',
+      fontSize: 24,
+      marginBottom: 20,
+      color: isDark ? '#fff' : '#000',
+    },
+    tooltip: {
+      position: 'absolute',
+      bottom: 100,
+      right: 30,
+      backgroundColor: '#333',
+      color: '#fff',
+      padding: 8,
+      borderRadius: 5,
+      fontSize: 12,
+    },
+    fab: {
+      position: 'absolute',
+      bottom: 30,
+      right: 30,
+      backgroundColor: 'rgba(216,7,22,1.0)',
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      alignItems: 'center',
+      justifyContent: 'center',
+      elevation: 5,
+      shadowColor: '#000',
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+      shadowOffset: { width: 0, height: 2 },
+    },
+    modal: {
+      justifyContent: 'flex-end',
+      margin: 0,
+    },
+    sheet: {
+      backgroundColor: isDark ? '#222' : 'white',
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      padding: 20,
+      maxHeight: height * 0.8,
+    },
+    category: {
+      marginBottom: 20,
+    },
+    categoryTitle: {
+      fontWeight: 'bold',
+      fontSize: 18,
+      marginBottom: 10,
+      color: isDark ? '#fff' : '#000',
+    },
+    emptyText: {
+      fontStyle: 'italic',
+      color: isDark ? '#aaa' : '#666',
+    },
+    itemRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    image: {
+      width: 40,
+      height: 40,
+      borderRadius: 10,
+      marginRight: 10,
+    },
+    itemText: {
+      color: isDark ? '#fff' : '#000',
+    },
+  });
+}
 
