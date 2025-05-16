@@ -5,41 +5,30 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  StyleSheet,
-  Dimensions,
-  useColorScheme,
   Animated,
-  SafeAreaView,
+  Dimensions,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+import HomeScreen from './Screens/HomeScreen';
+import StudentsScreen from './Screens/StudentsScreen';
+import PasswordScreen from './Screens/PasswordScreen';
+import { UserProvider } from './UserContext';
 
 const { height } = Dimensions.get('window');
+const Stack = createNativeStackNavigator();
 
 const categories = [
-  {
-    title: 'Student',
-    items: [
-      { id: '1', label: 'Email', image: 'https://via.placeholder.com/Email' },
-      { id: '2', label: 'Xoom', image: 'https://via.placeholder.com/Xoom' },
-    ],
-  },
-  {
-    title: 'University',
-    items: [{ id: '3', label: 'abpou', image: 'https://via.placeholder.com/50' }],
-  },
-  {
-    title: 'Other',
-    items: [{ id: '4', label: 'aasa', image: 'https://via.placeholder.com/50' }],
-  },
+  { id: '1', label: 'Home', image: 'https://via.placeholder.com/50' },
+  { id: '2', label: 'Students', image: 'https://via.placeholder.com/50' },
+  { id: '3', label: 'Password', image: 'https://via.placeholder.com/50' },
 ];
 
-export default function App() {
-  const [visible, setVisible] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
+function MenuOverlay({ visible, setVisible, navigation }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
 
   useEffect(() => {
     if (visible) {
@@ -53,145 +42,70 @@ export default function App() {
     }
   }, [visible]);
 
-  const styles = getStyles(isDark);
+  return (
+    <Modal isVisible={visible} onBackdropPress={() => setVisible(false)} style={{ justifyContent: 'flex-end', margin: 0 }}>
+      <View style={{ backgroundColor: 'white', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, maxHeight: height * 0.6 }}>
+        <ScrollView>
+          {categories.map((item) => (
+            <Animated.View key={item.id} style={{ opacity: fadeAnim }}>
+              <TouchableOpacity
+                style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}
+                onPress={() => {
+                  navigation.navigate(item.label);
+                  setVisible(false);
+                }}
+              >
+                <Image source={{ uri: item.image }} style={{ width: 40, height: 40, borderRadius: 10, marginRight: 10 }} />
+                <Text style={{ fontSize: 16 }}>{item.label}</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          ))}
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+}
+
+function MainApp() {
+  const [menuVisible, setMenuVisible] = useState(false);
+  const navigation = useNavigation();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>FAB-triggered Bottom Menu</Text>
+    <View style={{ flex: 1 }}>
+      <Stack.Navigator screenOptions={{ headerShown: true }} initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Students" component={StudentsScreen} />
+        <Stack.Screen name="Password" component={PasswordScreen} />
+      </Stack.Navigator>
 
-      {/* Floating Action Button + Tooltip */}
-      {showTooltip && <Text style={styles.tooltip}>Create New</Text>}
       <TouchableOpacity
-        style={styles.fab}
-        onPress={() => setVisible(true)}
-        onLongPress={() => setShowTooltip(true)}
-        onPressOut={() => setShowTooltip(false)}
-        accessibilityLabel="Open menu"
+        style={{
+          position: 'absolute',
+          bottom: 30,
+          right: 30,
+          backgroundColor: 'red',
+          width: 60,
+          height: 60,
+          borderRadius: 30,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        onPress={() => setMenuVisible(true)}
       >
         <Icon name="plus" size={24} color="white" />
       </TouchableOpacity>
 
-      {/* Bottom Modal Menu */}
-      <Modal
-        isVisible={visible}
-        onBackdropPress={() => setVisible(false)}
-        style={styles.modal}
-      >
-        <View style={styles.sheet}>
-          <ScrollView>
-            {categories.map((category) => (
-              <View key={category.title} style={styles.category}>
-                <Text style={styles.categoryTitle}>{category.title}</Text>
-                {category.items.length === 0 ? (
-                  <Text style={styles.emptyText}>No items</Text>
-                ) : (
-                  category.items.map((item, index) => (
-                    <Animated.View
-                      key={item.id}
-                      style={{ opacity: fadeAnim }}
-                    >
-                      <TouchableOpacity
-                        style={styles.itemRow}
-                        onPress={() => {
-                          console.log(`${item.label} selected`);
-                          setVisible(false);
-                        }}
-                      >
-                        <Image
-                          source={{ uri: item.image }}
-                          style={styles.image}
-                        />
-                        <Text style={styles.itemText}>{item.label}</Text>
-                      </TouchableOpacity>
-                    </Animated.View>
-                  ))
-                )}
-              </View>
-            ))}
-          </ScrollView>
-        </View>
-      </Modal>
-    </SafeAreaView>
+      <MenuOverlay visible={menuVisible} setVisible={setMenuVisible} navigation={navigation} />
+    </View>
   );
 }
 
-function getStyles(isDark) {
-  return StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      backgroundColor: isDark ? '#000' : '#fff',
-    },
-    header: {
-      textAlign: 'center',
-      fontSize: 24,
-      marginBottom: 20,
-      color: isDark ? '#fff' : '#000',
-    },
-    tooltip: {
-      position: 'absolute',
-      bottom: 100,
-      right: 30,
-      backgroundColor: '#333',
-      color: '#fff',
-      padding: 8,
-      borderRadius: 5,
-      fontSize: 12,
-    },
-    fab: {
-      position: 'absolute',
-      bottom: 30,
-      right: 30,
-      backgroundColor: 'rgba(216,7,22,1.0)',
-      width: 60,
-      height: 60,
-      borderRadius: 30,
-      alignItems: 'center',
-      justifyContent: 'center',
-      elevation: 5,
-      shadowColor: '#000',
-      shadowOpacity: 0.2,
-      shadowRadius: 5,
-      shadowOffset: { width: 0, height: 2 },
-    },
-    modal: {
-      justifyContent: 'flex-end',
-      margin: 0,
-    },
-    sheet: {
-      backgroundColor: isDark ? '#222' : 'white',
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      padding: 20,
-      maxHeight: height * 0.8,
-    },
-    category: {
-      marginBottom: 20,
-    },
-    categoryTitle: {
-      fontWeight: 'bold',
-      fontSize: 18,
-      marginBottom: 10,
-      color: isDark ? '#fff' : '#000',
-    },
-    emptyText: {
-      fontStyle: 'italic',
-      color: isDark ? '#aaa' : '#666',
-    },
-    itemRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 10,
-    },
-    image: {
-      width: 40,
-      height: 40,
-      borderRadius: 10,
-      marginRight: 10,
-    },
-    itemText: {
-      color: isDark ? '#fff' : '#000',
-    },
-  });
+export default function App() {
+  return (
+    <UserProvider>
+      <NavigationContainer>
+        <MainApp />
+      </NavigationContainer>
+    </UserProvider>
+  );
 }
-
