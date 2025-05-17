@@ -1,5 +1,5 @@
 /**
- * @file PasswordScreen.tsx
+ * @file OutlookScreen.tsx
  * @brief CSE3MAD-Assessment 1 Part 2
  *
  * @author Ry Thomas McLean (21723607)
@@ -22,12 +22,12 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-const PasswordScreen = () => {
+const OutlookScreen = () => {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Password Page</Text>
+      <Text>Outlook Page</Text>
     </View>
   );
 };
 
-export default PasswordScreen;
+export default OutlookScreen;

@@ -1,5 +1,5 @@
 /**
- * @file PasswordScreen.tsx
+ * @file MapViewScreen.tsx
  * @brief CSE3MAD-Assessment 1 Part 2
  *
  * @author Ry Thomas McLean (21723607)
@@ -20,14 +20,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  **/
 import React from 'react';
-import { View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-const PasswordScreen = () => {
+const MapViewScreen = () => {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Password Page</Text>
+    <View style={styles.container}>
+      <iframe
+        title="La Trobe University Map"
+        src="https://www.openstreetmap.org/export/embed.html?bbox=145.0435%2C-37.7233%2C145.0535%2C-37.7173&layer=mapnik&marker=-37.720079%2C145.048615"
+        style={styles.map}
+      />
     </View>
   );
 };
 
-export default PasswordScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  map: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    width: '100%',
+    height: '100%',
+    border: 'none',
+  },
+});
+
+export default MapViewScreen;
+
+
+
+

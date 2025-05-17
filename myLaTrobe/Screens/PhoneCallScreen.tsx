@@ -1,5 +1,5 @@
 /**
- * @file PasswordScreen.tsx
+ * @file PhoneCallScreen.tsx
  * @brief CSE3MAD-Assessment 1 Part 2
  *
  * @author Ry Thomas McLean (21723607)
@@ -20,14 +20,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  **/
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity, Linking, StyleSheet } from 'react-native';
 
-const PasswordScreen = () => {
+const PhoneCallScreen = () => {
+  const handleCall = () => {
+    Linking.openURL('tel:+9479 2222');
+  };
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Password Page</Text>
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.callButton} onPress={handleCall}>
+        <Text style={styles.callText}> Call For Help</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
-export default PasswordScreen;
+export default PhoneCallScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  callButton: {
+    backgroundColor: 'red',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+  },
+  callText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});

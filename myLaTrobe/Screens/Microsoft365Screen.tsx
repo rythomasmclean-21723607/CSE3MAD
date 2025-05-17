@@ -1,5 +1,5 @@
 /**
- * @file PasswordScreen.tsx
+ * @file Microsoft365Screen.tsx
  * @brief CSE3MAD-Assessment 1 Part 2
  *
  * @author Ry Thomas McLean (21723607)
@@ -22,12 +22,12 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-const PasswordScreen = () => {
+const Microsoft365Screen = () => {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Password Page</Text>
+      <Text>Microsoft365 Page</Text>
     </View>
   );
 };
 
-export default PasswordScreen;
+export default Microsoft365Screen;

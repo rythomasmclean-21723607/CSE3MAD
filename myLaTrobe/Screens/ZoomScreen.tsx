@@ -1,5 +1,5 @@
 /**
- * @file PasswordScreen.tsx
+ * @file XoomScreen.tsx
  * @brief CSE3MAD-Assessment 1 Part 2
  *
  * @author Ry Thomas McLean (21723607)
@@ -19,15 +19,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  **/
+
 import React from 'react';
 import { View, Text } from 'react-native';
 
-const PasswordScreen = () => {
+const XoomScreen = () => {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Password Page</Text>
+      <Text>Xoom Page</Text>
     </View>
   );
 };
 
-export default PasswordScreen;
+export default XoomScreen;
