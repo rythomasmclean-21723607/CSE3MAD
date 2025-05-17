@@ -1,6 +1,8 @@
 # CSE3MAD
 CSE3MAD Assignment 2 – Making a Purposeful Mobile Application Total Subject Grade Contribution:
 
+Managed By Jira
+
 Design, build, and refine a purposeful Android Mobile Application.
 
 With the following features:
@@ -34,6 +36,8 @@ The myLaTrobe University application has been selected as the project implmented
 👨‍👩‍👧‍👦 Team Members
 
     Ry Thomas McLean (21723607)
+
+
 
 📄 License
 
