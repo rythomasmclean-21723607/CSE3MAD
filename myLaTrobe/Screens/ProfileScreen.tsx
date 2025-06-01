@@ -21,17 +21,26 @@
  **/
 
 import React from 'react';
-import { View, Text, Image, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, Image, StyleSheet, ImageBackground, ActivityIndicator } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { useUser } from '../UserContext';
 import images from '../Assets/ResourceMap';
 
-const accessDoor = true;
-
 const ProfileScreen = () => {
   const { profile } = useUser();
+  
+  // Add safety check for profile data
+  if (!profile || !profile[0]) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="rgba(216,7,22,1.0)" />
+        <Text style={styles.loadingText}>Loading profile...</Text>
+      </View>
+    );
+  }
+
   const user = profile[0];
-  const userType = user.customfields.find(f => f.shortname === 'user_type')?.value;
+  const userType = user.customfields?.find(f => f.shortname === 'user_type')?.value || 'Student';
 
   return (
     <ImageBackground
@@ -44,36 +53,38 @@ const ProfileScreen = () => {
           <Image
             source={images['profileImage'] || images['profile-fallbackProfile']}
             style={styles.profileImage}
+            defaultSource={images['profile-fallbackProfile']} // Fallback for Android
           />
         </View>
 
         <View style={styles.cardContent}>
           <Text style={styles.userType}>{userType}</Text>
-          <Text style={styles.name}>{user.firstname} {user.lastname}</Text>
+          <Text style={styles.name}>{user.firstname || 'N/A'} {user.lastname || ''}</Text>
 
-          {/* Circular background + QRCode in front via wrapper */}
+          {/* QR Code Container with white background for better visibility */}
           <View style={styles.qrContainer}>
             <View style={styles.qrCodeWrapper}>
               <QRCode
-                value={user.idnumber}
-                size={180}
+                value={user.idnumber || 'No ID Available'}
+                size={160}
                 color="rgba(0,0,0,1.0)"
-                backgroundColor="transparent"
+                backgroundColor="rgba(255,255,255,1.0)" // White background for better visibility
               />
             </View>
           </View>
 
           <View style={styles.infoColumn}>
-  <View style={styles.idBox}>
-    <Text style={styles.label}>Student ID</Text>
-    <Text style={styles.idText}>{user.idnumber}</Text>
-  </View>
+            <View style={styles.idBox}>
+              <Text style={styles.label}>Student ID</Text>
+              <Text style={styles.idText}>{user.idnumber || 'N/A'}</Text>
+            </View>
 
-  <View style={styles.signatureBox}>
+            <View style={styles.signatureBox}>
               <Image
                 source={images['profileSignature'] || images['profile-fallbackSignature']}
                 style={styles.signatureImage}
                 resizeMode="contain"
+                defaultSource={images['profile-fallbackSignature']}
               />
             </View>
           </View>
@@ -89,13 +100,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: 'rgba(216,7,22,1.0)',
+  },
   card: {
     backgroundColor: 'rgba(255,255,255,1.0)',
     borderRadius: 15,
     width: '90%',
     paddingTop: 140,
+    paddingBottom: 30, // Add bottom padding
     alignItems: 'center',
-    elevation: 5,
+    elevation: 8, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
     position: 'relative',
   },
   profileWrapper: {
@@ -110,15 +137,11 @@ const styles = StyleSheet.create({
     borderWidth: 6,
     borderColor: 'rgba(252,0,8,1.0)',
     backgroundColor: 'rgba(255,255,255,1.0)',
-    shadowColor: 'rgba(0,0,0,1.0)',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
   },
   cardContent: {
     alignItems: 'center',
     width: '100%',
+    paddingHorizontal: 20,
   },
   userType: {
     color: 'rgba(252,0,8,1.0)',
@@ -131,68 +154,77 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 18,
     marginBottom: 20,
+    textAlign: 'center',
   },
   qrContainer: {
-    width: 200,
-    height: 200,
+    width: 180,
+    height: 180,
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
     marginBottom: 20,
+    backgroundColor: 'rgba(255,255,255,1.0)',
+    borderRadius: 15,
+    padding: 10,
+    elevation: 3, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
-  
   qrCodeWrapper: {
-    position: 'absolute',
-    zIndex: 2,
-    width: 200,
-    height: 200,
     justifyContent: 'center',
     alignItems: 'center',
   },
   infoColumn: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     width: '100%',
     marginTop: 10,
-    gap: 20,
   },
   idBox: {
-    width: 150,
+    flex: 1,
     alignItems: 'center',
-    backgroundColor: 'transparent',
-    paddingVertical: 10,
-    borderRadius: 8,
-    elevation: 2,
+    backgroundColor: 'rgba(248,248,248,1.0)',
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    marginRight: 10,
+    elevation: 2, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   signatureBox: {
-    width: 180,
-    marginLeft: -10,
+    flex: 1,
     alignItems: 'center',
-    backgroundColor: 'transparent',
-    paddingVertical: 12,
-    borderRadius: 8,
-    elevation: 2,
+    backgroundColor: 'rgba(248,248,248,1.0)',
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    elevation: 2, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   label: {
     fontWeight: 'bold',
     color: 'rgba(0,0,0,1.0)',
     marginBottom: 5,
     textAlign: 'center',
+    fontSize: 14,
   },
   idText: {
     fontSize: 16,
-    backgroundColor: 'transparent',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 5,
     color: 'rgba(0,0,0,1.0)',
     textAlign: 'center',
+    fontWeight: '600',
   },
   signatureImage: {
-    width: 150,
-    height: 80,
-    backgroundColor: 'rgba(147,197,227,0.0)',
+    width: 100,
+    height: 50,
     borderRadius: 5,
   },
 });

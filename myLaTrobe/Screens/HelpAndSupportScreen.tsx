@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  **/
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -36,8 +36,9 @@ const ChatScreen = () => {
     { id: '1', text: 'Hello Welcome to MyLaTrobe! How can I help you today?', sender: 'bot' },
   ]);
   const [inputText, setInputText] = useState('');
+  const flatListRef = useRef(null);
 
-  const handleSend = () => {
+  const handleSend = useCallback(() => {
     if (inputText.trim() === '') return;
 
     const newMessage = {
@@ -47,8 +48,8 @@ const ChatScreen = () => {
     };
 
     setMessages((prev) => [...prev, newMessage]);
+    setInputText('');
 
-    // Simulate bot reply
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
@@ -59,31 +60,56 @@ const ChatScreen = () => {
         },
       ]);
     }, 500);
+  }, [inputText]);
 
-    setInputText('');
-  };
-
-  const renderItem = ({ item }) => (
+  const renderItem = useCallback(({ item }) => (
     <View
       style={[
         styles.messageContainer,
         item.sender === 'user' ? styles.userMessage : styles.botMessage,
       ]}
     >
-      <Text style={styles.messageText}>{item.text}</Text>
+      <Text style={[
+        styles.messageText,
+        { color: item.sender === 'user' ? 'rgba(255, 255, 255, 1.0)' : 'rgba(0, 0, 0, 1.0)' }
+      ]}>
+        {item.text}
+      </Text>
     </View>
-  );
+  ), []);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    if (flatListRef.current && messages.length > 0) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    }
+  }, [messages]);
+
+  const keyExtractor = useCallback((item) => item.id, []);
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       <FlatList
+        ref={flatListRef}
         data={messages}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={keyExtractor}
         contentContainerStyle={styles.messageList}
+        showsVerticalScrollIndicator={false}
+        removeClippedSubviews={Platform.OS === 'android'}
+        maxToRenderPerBatch={10}
+        windowSize={10}
+        getItemLayout={(data, index) => ({
+          length: 60, // Approximate item height
+          offset: 60 * index,
+          index,
+        })}
       />
 
       <View style={styles.inputContainer}>
@@ -92,9 +118,16 @@ const ChatScreen = () => {
           value={inputText}
           onChangeText={setInputText}
           placeholder="Type a message..."
+          multiline={false}
+          returnKeyType="send"
+          onSubmitEditing={handleSend}
         />
-        <TouchableOpacity onPress={handleSend} style={styles.sendButton}>
-          <Text style={{ color: 'white' }}>Send</Text>
+        <TouchableOpacity 
+          onPress={handleSend} 
+          style={styles.sendButton}
+          activeOpacity={0.7}
+        >
+          <Text style={{ color: 'rgba(255, 255, 255, 1.0)', fontWeight: 'bold' }}>Send</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -104,47 +137,56 @@ const ChatScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f6f6f6',
+    backgroundColor: 'rgba(246, 246, 246, 1.0)',
   },
   messageList: {
     padding: 10,
+    paddingBottom: 20,
   },
   messageContainer: {
     marginVertical: 5,
-    padding: 10,
+    padding: 12,
     borderRadius: 10,
     maxWidth: '80%',
+    minHeight: 40,
   },
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: '#007aff',
+    backgroundColor: 'rgba(0, 122, 255, 1.0)',
   },
   botMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: '#e5e5ea',
+    backgroundColor: 'rgba(229, 229, 234, 1.0)',
   },
   messageText: {
-    color: '#000',
+    fontSize: 16,
+    lineHeight: 20,
   },
   inputContainer: {
     flexDirection: 'row',
     padding: 10,
-    borderTopColor: '#ddd',
+    borderTopColor: 'rgba(221, 221, 221, 1.0)',
     borderTopWidth: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    alignItems: 'center',
   },
   input: {
     flex: 1,
-    backgroundColor: '#f1f1f1',
-    padding: 10,
+    backgroundColor: 'rgba(241, 241, 241, 1.0)',
+    padding: 12,
     borderRadius: 20,
     marginRight: 10,
+    fontSize: 16,
+    maxHeight: 100,
   },
   sendButton: {
-    backgroundColor: '#007aff',
-    paddingHorizontal: 15,
+    backgroundColor: 'rgba(0, 122, 255, 1.0)',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
     justifyContent: 'center',
     borderRadius: 20,
+    minWidth: 60,
+    alignItems: 'center',
   },
 });
 

@@ -29,7 +29,7 @@ The project presented in Assignment Phase 1 was;
 
   - 🎓 A La Trobe University campus mobile application.
 
-The myLaTrobe University application has been selected as the project implmented.
+The myLaTrobe University application has been selected as the project implemented.
 
 👨‍👩‍👧‍👦 Team Members
 
@@ -38,3 +38,7 @@ The myLaTrobe University application has been selected as the project implmented
 📄 License
 
     General Public License Version 3
+
+Instructions:
+    
+	eas build -p android --local --clear-cache

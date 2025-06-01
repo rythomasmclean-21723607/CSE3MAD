@@ -20,17 +20,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  **/
 import React from 'react';
-import { View, Text, TouchableOpacity, Linking, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Linking, StyleSheet, Alert } from 'react-native';
 
 const PhoneCallScreen = () => {
-  const handleCall = () => {
-    Linking.openURL('tel:+9479 2222');
+  const handleCall = async () => {
+    const phoneNumber = 'tel:+61479222222'; // Fixed phone number format (Australian format)
+    
+    try {
+      const supported = await Linking.canOpenURL(phoneNumber);
+      if (supported) {
+        await Linking.openURL(phoneNumber);
+      } else {
+        Alert.alert('Error', 'Phone calls are not supported on this device');
+      }
+    } catch (error) {
+      console.error('Error making phone call:', error);
+      Alert.alert('Error', 'Failed to make phone call');
+    }
   };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.callButton} onPress={handleCall}>
-        <Text style={styles.callText}> Call For Help</Text>
+        <Text style={styles.callText}>Call For Help</Text>
       </TouchableOpacity>
     </View>
   );
@@ -43,16 +55,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f5f5f5',
   },
   callButton: {
     backgroundColor: 'red',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 8,
+    elevation: 3, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   callText: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 });

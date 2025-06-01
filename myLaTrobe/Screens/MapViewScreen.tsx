@@ -21,14 +21,20 @@
  **/
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { WebView } from 'react-native-webview';
 
 const MapViewScreen = () => {
   return (
     <View style={styles.container}>
-      <iframe
-        title="La Trobe University Map"
-        src="https://www.openstreetmap.org/export/embed.html?bbox=145.0435%2C-37.7233%2C145.0535%2C-37.7173&layer=mapnik&marker=-37.720079%2C145.048615"
+      <WebView
+        source={{
+          uri: 'https://www.openstreetmap.org/export/embed.html?bbox=145.0435%2C-37.7233%2C145.0535%2C-37.7173&layer=mapnik&marker=-37.720079%2C145.048615'
+        }}
         style={styles.map}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        startInLoadingState={true}
+        scalesPageToFit={true}
       />
     </View>
   );
@@ -39,19 +45,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   map: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    width: '100%',
-    height: '100%',
-    border: 'none',
+    flex: 1,
   },
 });
 
 export default MapViewScreen;
-
 
 
 
