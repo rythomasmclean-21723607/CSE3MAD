@@ -355,3 +355,35 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Expo
+.expo/
+.expo-shared/
+web-build/
+*.orig.*
+
+# EAS Build
+eas-build-pre-install.sh
+eas-build-post-install.sh
+.eas/
+eas-hooks/
+
+# Android
+*.apk
+*.aab
+*.ap_
+*.dex
+.gradle/
+local.properties
+.navigation/
+captures/
+.externalNativeBuild/
+.cxx/
+google-services.json
+
+# Keystore files
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
